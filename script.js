@@ -1,12 +1,14 @@
-/* =========================
+/* =========================/* =========================
    script.js (FULL FILE)
    ========================= */
 
 // ---- Settings you should edit ----
 const MET_DATE = new Date("2024-09-02T00:00:00+05:30"); // Sept 2, 2024 (India time)
 
-// ✅ IMPORTANT: Paste the *exact* Drive share link you copied (do NOT remove anything)
-// It may contain resourcekey=... which Android needs.
+// ✅ PASTE YOUR REAL DRIVE SHARE LINK HERE (exactly as copied from Drive)
+// Example:
+// const ALBUM_URL = "https://drive.google.com/drive/folders/1AbC...XYZ?usp=sharing&resourcekey=0-...";
+// IMPORTANT: do NOT use the masked link in production.
 const ALBUM_URL = "https://drive.google.com/drive/folders/14hD-JV17sOe1avhsVTLbqN5JZt3GtfY8?usp=sharing";
 
 const PASSCODE = "CAALINE";
@@ -101,27 +103,29 @@ modal?.addEventListener("click", (e) => {
 
 // ---- Helpers ----
 function sanitizeUrl(url) {
-  // Trim only; do NOT delete query params like resourcekey
+  // Keep query parameters (resourcekey etc). Only trim whitespace.
   return String(url || "").trim();
 }
 
 function openUrlBestEffort(url) {
   const finalUrl = sanitizeUrl(url);
 
-  // 1) Try opening new tab
+  // Try opening new tab first
   const win = window.open(finalUrl, "_blank", "noopener,noreferrer");
 
-  // 2) If popup blocked, open same tab
+  // If popup blocked, open in same tab
   if (!win) {
     window.location.href = finalUrl;
-    return { openedNewTab: false, finalUrl };
+    return { openedNewTab: false };
   }
-
-  return { openedNewTab: true, finalUrl };
+  return { openedNewTab: true };
 }
 
-// ---- Album gating (keeps exact Drive link) ----
-document.getElementById("openAlbumBtn")?.addEventListener("click", () => {
+// ---- Album gating (no URL shown on page) ----
+const openAlbumBtn = document.getElementById("openAlbumBtn");
+const howBtn = document.getElementById("howItWorksBtn");
+
+openAlbumBtn?.addEventListener("click", () => {
   const entered = prompt("Passcode (hint: something only you and I know 💗)");
   if (!entered) return;
 
@@ -132,40 +136,56 @@ document.getElementById("openAlbumBtn")?.addEventListener("click", () => {
 
   const url = sanitizeUrl(ALBUM_URL);
 
-  if (!url) {
+  if (!url || url.includes("PASTE_YOUR_REAL_DRIVE_FOLDER_LINK_HERE")) {
     openModal(
-      "Album link missing",
-      `<p class="muted">Set <b>ALBUM_URL</b> in <code>script.js</code>.</p>`
+      "Album link not set",
+      `<p class="muted">You haven’t pasted your real Drive folder link in <code>script.js</code> yet.</p>
+       <p class="muted">Set <b>ALBUM_URL</b> to the exact “Copy link” URL from Drive (keep any <code>resourcekey</code> params).</p>`
     );
     return;
   }
 
-  // Open and also show a tap fallback link in case Android does something weird
+  // Open it now (best effort)
   const res = openUrlBestEffort(url);
 
+  // Show a backup button (NOT the URL)
   openModal(
     "Our Album 📸",
-    `<p class="muted">${res.openedNewTab ? "Opened the album in a new tab 💗" : "Opening the album now… 💗"}</p>
-     <p class="muted small">If Android shows an error after choosing an account, your copied link likely contains a <b>resourcekey</b>. Re-copy the link from Drive and paste it exactly.</p>
-     <p class="muted small">Backup tap link:</p>
-     <p style="word-break:break-all">
-       <a href="${res.finalUrl}" target="_blank" rel="noopener noreferrer">${res.finalUrl}</a>
-     </p>`
+    `
+      <p class="muted">${res.openedNewTab ? "Opened in a new tab 💗" : "Opening now… 💗"}</p>
+      <p class="muted small">If it didn’t open, tap the button below:</p>
+      <div class="btn-row" style="margin-top:12px">
+        <button class="btn primary" id="openAlbumAgainBtn">Open Album</button>
+        <button class="btn ghost" id="closeAfterBtn">Close</button>
+      </div>
+      <p class="muted small" style="margin-top:12px">
+        (We don’t display the link here to keep it private.)
+      </p>
+    `
   );
+
+  // Attach handlers after modal renders
+  setTimeout(() => {
+    document.getElementById("openAlbumAgainBtn")?.addEventListener("click", () => {
+      openUrlBestEffort(url);
+    });
+    document.getElementById("closeAfterBtn")?.addEventListener("click", closeModal);
+  }, 0);
 });
 
-document.getElementById("howItWorksBtn")?.addEventListener("click", () => {
+howBtn?.addEventListener("click", () => {
   openModal("How it works", `
     <div class="muted" style="line-height:1.6">
-      <p><b>Photos are not stored on GitHub.</b> The site opens your Google Drive folder after passcode.</p>
-      <p><b>Important on Android:</b> we must open the exact share link (including any <code>resourcekey</code> parameter).</p>
-      <p><b>Sharing must be:</b> “Anyone with the link (Viewer)”</p>
+      <p><b>Photos are not stored on GitHub.</b> The site opens your Google Drive folder after the passcode.</p>
+      <p><b>Android note:</b> Use the exact Drive “Copy link” URL (don’t remove parameters like <code>resourcekey</code>).</p>
+      <p>This passcode prompt is a “keep it private-ish” layer, not hardcore security.</p>
     </div>
   `);
 });
 
 // ---- Cute hearts ----
 const hearts = document.getElementById("hearts");
+
 function spawnHeart() {
   if (!hearts) return;
   const h = document.createElement("div");
@@ -179,3 +199,5 @@ function spawnHeart() {
   setTimeout(() => h.remove(), 16000);
 }
 setInterval(spawnHeart, 260);
+
+
