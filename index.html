@@ -1,0 +1,177 @@
+<!-- =========================
+     index.html (FULL FILE)
+     ========================= -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Emy 💘</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Floating hearts -->
+  <div id="hearts"></div>
+
+  <!-- Landing -->
+  <section id="landing" class="section active">
+    <div class="card hero">
+      <h1 class="title">Emy, will you be my valentine? 💖</h1>
+      <p class="subtitle">One tiny click. One big smile.</p>
+
+      <div class="btn-row center">
+        <button class="btn primary" id="yesBtn">Yes 💞</button>
+        <button class="btn ghost" id="noBtn">No 🙈</button>
+      </div>
+
+      <p class="hint" id="noHint"></p>
+    </div>
+  </section>
+
+  <!-- Main -->
+  <section id="main" class="section">
+    <!-- Sidebar layout (nav moved into sidebar) -->
+    <div class="wrap layout-sidebar">
+
+      <!-- LEFT SIDEBAR -->
+      <aside class="sidebar">
+        <div class="card sidebar-card">
+          <div class="brandline">
+            <span class="dot"></span>
+            <span class="brandtext">For Emy</span>
+          </div>
+
+          <!-- NAV INSIDE SIDEBAR -->
+          <div class="side-nav">
+            <button class="navbtn" data-go="story">Our Story</button>
+            <button class="navbtn" data-go="counter">Days Since</button>
+            <button class="navbtn" data-go="album">Our Album</button>
+          </div>
+
+          <h2 class="side-title">Hi love. 👋</h2>
+          <p class="muted">
+            This little website is my way of saying: you’re my favorite person.
+          </p>
+
+          <div class="imgbox sidebar-img">
+            <img src="assets/caricature.png" alt="Our caricature" onerror="this.style.display='none'">
+            <div class="imgfallback">
+              <p><b>Add your caricature</b></p>
+              <p class="muted">Place it at <code>assets/caricature.png</code></p>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- RIGHT CONTENT -->
+      <main class="content">
+
+        <div class="card" id="story">
+          <h2>Our Story ✨</h2>
+
+          <div class="story">
+            <p>
+              It started the way modern fate likes to start — a small swipe, a quiet spark,
+              and two strangers on Bumble who somehow felt familiar.
+              Then came Snapchat… and that soft, unreal feeling of
+              <i>“wait… why does this feel easy?”</i>
+            </p>
+
+            <p>
+              And then life happened. Silence. A long sabbatical where the world kept moving,
+              and we didn’t. No noise, no updates — just a paused chapter that neither of us
+              knew would continue.
+            </p>
+
+            <p>
+              Until late August… when it resumed like a song you forgot you loved.
+              Random texts. Small laughs. A little warmth returning.
+              And then <b>September 2nd</b> — you inside your hostel, me outside,
+              pretending to be calm… while you looked down from your window,
+              and I felt my heart do that thing it does only around you.
+            </p>
+
+            <p>
+              <b>September 3rd</b> was supposed to be simple —
+              “just going to give a book” —
+              but we both know it wasn’t about the book.
+              It was about the car, the road, the time that didn’t matter,
+              and the way we kept driving like the universe finally gave us space
+              to just… be.
+            </p>
+
+            <p>
+              After that came the endless series of meetups, tiny plans, sudden trips,
+              and the kind of memories that don’t announce themselves while they’re happening —
+              they just quietly become your favorite ones.
+            </p>
+
+            <p>
+              You’ve been with me through happiness and sadness,
+              and I know these last couple of months have been rough —
+              things in my life pulled me down in ways I didn’t expect,
+              and sometimes you felt like you couldn’t talk to me the same way anymore.
+              But love isn’t only the easy days. Love is staying.
+            </p>
+
+            <p class="story-closer">
+              So here’s my promise, Emy:
+              we will overcome. We will come out of this.
+              And one day we’ll look back and realize —
+              we didn’t just survive it… <b>we emerged victorious</b>.
+            </p>
+          </div>
+        </div>
+
+        <div class="card" id="counter">
+          <h2>Days since we met ⏳</h2>
+          <p class="muted">Starting from <b>September 2, 2024</b>.</p>
+
+          <div class="counter-grid">
+            <div class="pill"><div class="num" id="days">—</div><div class="label">Days</div></div>
+            <div class="pill"><div class="num" id="hours">—</div><div class="label">Hours</div></div>
+            <div class="pill"><div class="num" id="mins">—</div><div class="label">Minutes</div></div>
+            <div class="pill"><div class="num" id="secs">—</div><div class="label">Seconds</div></div>
+          </div>
+
+          <div class="note">
+            <b>Message for Emy:</b>
+            <span class="muted">No matter how high the happiness or how heavy the sadness, we’ll hold on to each other, stay side by side, and get through everything together.</span>
+          </div>
+        </div>
+
+        <div class="card" id="album">
+          <h2>Our Album 📸</h2>
+          <p class="muted">
+            Your photos stay off this website. This button opens the album link only after a passcode.
+          </p>
+
+          <div class="btn-row">
+            <button class="btn primary" id="openAlbumBtn">Open Album</button>
+            <button class="btn ghost" id="howItWorksBtn">How it works</button>
+          </div>
+
+          <div class="muted small">
+            Tip: Don't open this in public
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </section>
+
+  <!-- Modal -->
+  <div class="modal" id="modal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <b id="modalTitle">Album</b>
+        <button class="iconbtn" id="closeModal">✕</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
