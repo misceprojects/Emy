@@ -4,7 +4,7 @@
 
 // ---- Settings you should edit ----
 const MET_DATE = new Date("2024-09-02T00:00:00+05:30"); // Sept 2, 2024 (India time)
-const ALBUM_URL = ""; // Paste your Google Photos shared album / Drive folder link here
+const ALBUM_URL = "https://drive.google.com/drive/folders/14hD-JV17sOe1avhsVTLbqN5JZt3GtfY8?usp=sharing"; // Paste your Google Photos shared album / Drive folder link here
 const PASSCODE = "CAALINE";
 
 // ---- Landing logic ----
@@ -151,3 +151,4 @@ function spawnHeart() {
 }
 
 setInterval(spawnHeart, 260);
+
