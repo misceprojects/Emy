@@ -5,8 +5,9 @@
 // ---- Settings you should edit ----
 const MET_DATE = new Date("2024-09-02T00:00:00+05:30"); // Sept 2, 2024 (India time)
 
-// ✅ Paste your FULL Drive folder share link here (no extra spaces)
-const ALBUM_URL = "https://drive.google.com/drive/folders/8?usp=sharing";
+// ✅ IMPORTANT: Paste the *exact* Drive share link you copied (do NOT remove anything)
+// It may contain resourcekey=... which Android needs.
+const ALBUM_URL = "https://drive.google.com/drive/folders/14hD-JV17sOe1avhsVTLbqN5JZt3GtfY8?usp=sharing";
 
 const PASSCODE = "CAALINE";
 
@@ -79,9 +80,7 @@ tick();
 const modal = document.getElementById("modal");
 const modalBody = document.getElementById("modalBody");
 const modalTitle = document.getElementById("modalTitle");
-const closeBtn = document.getElementById("closeModal");
-
-closeBtn?.addEventListener("click", closeModal);
+document.getElementById("closeModal")?.addEventListener("click", closeModal);
 
 function openModal(title, html) {
   if (!modal || !modalTitle || !modalBody) return;
@@ -102,37 +101,27 @@ modal?.addEventListener("click", (e) => {
 
 // ---- Helpers ----
 function sanitizeUrl(url) {
-  if (!url) return "";
-  // remove hidden spaces/newlines
-  const cleaned = String(url).trim().replace(/\s+/g, "");
-  return cleaned;
+  // Trim only; do NOT delete query params like resourcekey
+  return String(url || "").trim();
 }
 
-function isProbablyValidDriveFolder(url) {
-  // Keep this loose on purpose since you may mask IDs
-  const u = sanitizeUrl(url);
-  return u.startsWith("https://drive.google.com/drive/folders/");
-}
-
-function openAlbumUrl(url) {
+function openUrlBestEffort(url) {
   const finalUrl = sanitizeUrl(url);
 
-  // Try new tab first (best UX)
+  // 1) Try opening new tab
   const win = window.open(finalUrl, "_blank", "noopener,noreferrer");
 
-  // If blocked (common on Android), fallback to same-tab navigation
+  // 2) If popup blocked, open same tab
   if (!win) {
     window.location.href = finalUrl;
-    return { openedNewTab: false };
+    return { openedNewTab: false, finalUrl };
   }
-  return { openedNewTab: true };
+
+  return { openedNewTab: true, finalUrl };
 }
 
-// ---- Album gating (works on Android + GitHub Pages) ----
-const openAlbumBtn = document.getElementById("openAlbumBtn");
-const howBtn = document.getElementById("howItWorksBtn");
-
-openAlbumBtn?.addEventListener("click", () => {
+// ---- Album gating (keeps exact Drive link) ----
+document.getElementById("openAlbumBtn")?.addEventListener("click", () => {
   const entered = prompt("Passcode (hint: something only you and I know 💗)");
   if (!entered) return;
 
@@ -146,77 +135,46 @@ openAlbumBtn?.addEventListener("click", () => {
   if (!url) {
     openModal(
       "Album link missing",
-      `<p class="muted">ALBUM_URL is empty in <code>script.js</code>.</p>
-       <p class="muted">Paste your Google Drive folder share link there.</p>`
+      `<p class="muted">Set <b>ALBUM_URL</b> in <code>script.js</code>.</p>`
     );
     return;
   }
 
-  // Even if your ID is masked, don't block the user if it works.
-  if (!isProbablyValidDriveFolder(url)) {
-    openModal(
-      "Check your link",
-      `<p class="muted">This doesn’t look like a Drive folder link:</p>
-       <p style="word-break:break-all"><code>${url}</code></p>
-       <p class="muted">Still, I’ll try opening it. If it fails, re-copy the folder share link from Drive.</p>
-       <div style="margin-top:12px" class="btn-row">
-         <button class="btn primary" id="tryOpenAnyway">Open anyway</button>
-       </div>`
-    );
+  // Open and also show a tap fallback link in case Android does something weird
+  const res = openUrlBestEffort(url);
 
-    // attach handler after modal renders
-    setTimeout(() => {
-      const btn = document.getElementById("tryOpenAnyway");
-      btn?.addEventListener("click", () => {
-        closeModal();
-        openAlbumUrl(url);
-      });
-    }, 0);
-
-    return;
-  }
-
-  // Open it (new tab if allowed, otherwise same tab)
-  const result = openAlbumUrl(url);
-
-  // Also provide a clickable fallback link in case popup blocked or user wants to tap
   openModal(
     "Our Album 📸",
-    `<p class="muted">
-       ${result.openedNewTab ? "Opened the album in a new tab 💗" : "Opening the album now… 💗"}
-     </p>
-     <p class="muted small">If nothing opened, tap the link below:</p>
+    `<p class="muted">${res.openedNewTab ? "Opened the album in a new tab 💗" : "Opening the album now… 💗"}</p>
+     <p class="muted small">If Android shows an error after choosing an account, your copied link likely contains a <b>resourcekey</b>. Re-copy the link from Drive and paste it exactly.</p>
+     <p class="muted small">Backup tap link:</p>
      <p style="word-break:break-all">
-       <a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>
+       <a href="${res.finalUrl}" target="_blank" rel="noopener noreferrer">${res.finalUrl}</a>
      </p>`
   );
 });
 
-howBtn?.addEventListener("click", () => {
+document.getElementById("howItWorksBtn")?.addEventListener("click", () => {
   openModal("How it works", `
     <div class="muted" style="line-height:1.6">
-      <p><b>Photos are not stored on GitHub.</b> The site only opens your Google Drive folder link.</p>
-      <p><b>After passcode:</b> we open the folder in a new tab (or same tab if popups are blocked).</p>
-      <p><b>Sharing must be:</b> “Anyone with the link (Viewer)” or she must be logged into the permitted Google account.</p>
+      <p><b>Photos are not stored on GitHub.</b> The site opens your Google Drive folder after passcode.</p>
+      <p><b>Important on Android:</b> we must open the exact share link (including any <code>resourcekey</code> parameter).</p>
+      <p><b>Sharing must be:</b> “Anyone with the link (Viewer)”</p>
     </div>
   `);
 });
 
-// ---- Cute cartoon hearts ----
+// ---- Cute hearts ----
 const hearts = document.getElementById("hearts");
-
 function spawnHeart() {
   if (!hearts) return;
   const h = document.createElement("div");
   h.className = "heart";
-
   const size = 14 + Math.random() * 20;
   h.style.width = size + "px";
   h.style.height = size + "px";
-
   h.style.left = Math.random() * 100 + "vw";
   h.style.animationDuration = (7 + Math.random() * 7) + "s";
-
   hearts.appendChild(h);
   setTimeout(() => h.remove(), 16000);
 }
