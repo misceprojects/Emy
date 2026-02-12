@@ -241,20 +241,23 @@ body{
 .imgbox{
   margin-top:18px;
   border-radius: 18px;
-  overflow:hidden;
-  border: 1px dashed rgba(0,0,0,.1);
-  min-height:280px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background: rgba(255,255,255,.85);
+  overflow: hidden;
+  border: 1px solid rgba(0,0,0,.08);
+  background: rgba(255,255,255,.9);
+
+  /* Make it auto height */
+  width: 100%;
+  aspect-ratio: 4 / 5;   /* keeps nice vertical ratio */
 }
 
 .imgbox img{
   width:100%;
   height:100%;
-  object-fit:cover;
+  object-fit: contain;   /* IMPORTANT: no cropping */
+  display:block;
+  background:white;
 }
+
 .imgfallback{
   text-align:center;
   padding: 14px;
@@ -375,3 +378,4 @@ body{
   50%{ transform: translateY(-40vh) translateX(18px) scale(1.05) rotate(-10deg); }
   to{ transform: translateY(-115vh) translateX(-12px) scale(1.25) rotate(14deg); opacity:0; }
 }
+
