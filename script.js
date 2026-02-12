@@ -2,9 +2,11 @@
    script.js (FULL FILE)
    ========================= */
 
-// ---- Settings you should edit ----
-const MET_DATE = new Date("2024-09-02T00:00:00+05:30"); // Sept 2, 2024 (India time)
-const ALBUM_URL = "https://drive.google.com/drive/folders/14hD-JV17sOe1avhsVTLbqN5JZt3GtfY8?usp=sharing"; // Paste your Google Photos shared album / Drive folder link here
+const MET_DATE = new Date("2024-09-02T00:00:00+05:30");
+
+// ✅ Paste your FULL Drive folder share link here
+const ALBUM_URL = "https://drive.google.com/drive/folders/14hD-JV17sOe1avhsVTLbqN5JZt3GtfY8?usp=sharing";
+
 const PASSCODE = "CAALINE";
 
 // ---- Landing logic ----
@@ -29,7 +31,6 @@ const noLines = [
 ];
 let noIndex = 0;
 
-// Android-friendly: pointer events
 noBtn.addEventListener("pointerenter", () => {
   const dx = (Math.random() * 110) - 55;
   const dy = (Math.random() * 60) - 30;
@@ -84,71 +85,70 @@ function openModal(title, html) {
   modalBody.innerHTML = html;
   modal.classList.add("show");
 }
-
 function closeModal() {
   modal.classList.remove("show");
   modalBody.innerHTML = "";
 }
-
 modal.addEventListener("click", (e) => {
   if (e.target === modal) closeModal();
 });
 
-// ---- Album gating (best-effort privacy) ----
+// ---- Album gating (Drive folder => open new tab) ----
 document.getElementById("openAlbumBtn").addEventListener("click", () => {
   const entered = prompt("Passcode (hint: something only you and I know 💗)");
   if (!entered) return;
 
-  if (entered === PASSCODE) {
-    if (!ALBUM_URL) {
-      openModal(
-        "Album",
-        `<p class="muted">You haven’t set the album link yet. Update <b>ALBUM_URL</b> in <code>script.js</code>.</p>`
-      );
-      return;
-    }
-
-    openModal("Our Album 📸", `<iframe src="${ALBUM_URL}" allow="autoplay"></iframe>`);
-  } else {
+  if (entered !== PASSCODE) {
     openModal("Oops 🙈", `<p class="muted">Wrong passcode. Try again, Emy 💗</p>`);
+    return;
   }
+
+  if (!ALBUM_URL || !ALBUM_URL.includes("/folders/")) {
+    openModal(
+      "Album link missing",
+      `<p class="muted">Your Drive folder link is missing or incomplete.</p>
+       <p class="muted">It should look like:</p>
+       <p><code>https://drive.google.com/drive/folders/FOLDER_ID?usp=sharing</code></p>`
+    );
+    return;
+  }
+
+  // ✅ Most reliable: open the Drive folder in new tab
+  const win = window.open(ALBUM_URL, "_blank", "noopener,noreferrer");
+
+  if (!win) {
+    openModal(
+      "Pop-up blocked 🙈",
+      `<p class="muted">Your browser blocked the album tab.</p>
+       <p class="muted">Allow popups for this site, then tap “Open Album” again 💗</p>`
+    );
+    return;
+  }
+
+  openModal("Our Album 📸", `<p class="muted">Opened the album in a new tab 💗</p>`);
 });
 
 document.getElementById("howItWorksBtn").addEventListener("click", () => {
   openModal("How it works", `
     <div class="muted" style="line-height:1.6">
-      <p><b>Photos are not stored on GitHub.</b> The site only opens a private album link.</p>
-      <p><b>Best convenience:</b> Google Photos shared album set to “Anyone with the link”.</p>
-      <p><b>Best privacy:</b> Share only with her Google account — but it may require login and may not open nicely in an iframe.</p>
-      <p>This passcode prompt is a “keep it private-ish” layer, not hardcore security.</p>
+      <p><b>Photos are not stored on GitHub.</b> The site only opens your Google Drive folder link.</p>
+      <p>Google Drive folders usually can’t be embedded, so we open it in a new tab after the passcode.</p>
+      <p><b>Make sure sharing is:</b> “Anyone with the link (Viewer)”</p>
     </div>
   `);
 });
 
 // ---- Cute cartoon hearts ----
 const hearts = document.getElementById("hearts");
-
 function spawnHeart() {
   const h = document.createElement("div");
   h.className = "heart";
-
-  const size = 14 + Math.random() * 20; // 14..34
+  const size = 14 + Math.random() * 20;
   h.style.width = size + "px";
   h.style.height = size + "px";
-
   h.style.left = Math.random() * 100 + "vw";
   h.style.animationDuration = (7 + Math.random() * 7) + "s";
-
-  const tint = Math.floor(Math.random() * 3);
-  if (tint === 1) {
-    h.style.filter = "drop-shadow(0 10px 18px rgba(30,20,40,.14)) hue-rotate(35deg)";
-  } else if (tint === 2) {
-    h.style.filter = "drop-shadow(0 10px 18px rgba(30,20,40,.14)) hue-rotate(120deg)";
-  }
-
   hearts.appendChild(h);
   setTimeout(() => h.remove(), 16000);
 }
-
 setInterval(spawnHeart, 260);
-
